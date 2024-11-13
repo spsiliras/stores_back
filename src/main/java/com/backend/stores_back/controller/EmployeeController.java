@@ -13,6 +13,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
+@RequestMapping("/employees")
 public class EmployeeController {
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -20,14 +21,14 @@ public class EmployeeController {
     @Autowired
     private StoreRepository storeRepository;
 
-    @GetMapping("/employees/{store_id}")
+    @GetMapping("/{store_id}")
     public List<Employee> getEmployees(@PathVariable int store_id) {
         Optional<Store> store = storeRepository.findById(store_id);
 
         return store.get().getEmployees();
     }
 
-    @PostMapping("/employees/add/{store_id}")
+    @PostMapping("/add/{store_id}")
     public Employee addEmployee(@RequestBody Employee newEmployee, @PathVariable int store_id) {
         Employee employee = storeRepository.findById(store_id).map(store -> {
             newEmployee.setStore(store);
@@ -35,5 +36,28 @@ public class EmployeeController {
         }).orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
         return employee;
+    }
+
+    @PostMapping("/edit/{employee_id}")
+    public Employee editEmployee(@RequestBody Employee newEmployee, @PathVariable int employee_id) {
+        Employee employee = employeeRepository.findById(employee_id)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee with " + employee_id + " not found"));
+
+        employee.setName(newEmployee.getName());
+        employee.setAddress(newEmployee.getAddress());
+        employee.setSalary(newEmployee.getSalary());
+
+        return employeeRepository.save(employee);
+    }
+
+    @DeleteMapping("/delete/{store_id}/{employee_id}")
+    public void deleteEmployee(@PathVariable int employee_id, @PathVariable int store_id) {
+        Optional<Employee> employee = employeeRepository.findById(employee_id);
+
+        Optional<Store> store = storeRepository.findById(store_id);
+
+        store.get().getEmployees().remove(employee.get());
+
+        employeeRepository.deleteById(employee_id);
     }
 }
