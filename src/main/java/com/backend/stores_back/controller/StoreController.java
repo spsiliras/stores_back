@@ -48,8 +48,5 @@ public class StoreController {
         return storeRepository.findById(id).get();
     }
 
-    @GetMapping("/employees/{id}")
-    public List<Employee> getEmployees(@PathVariable int id){
-        return storeRepository.findById(id).get().getEmployees();
-    }
+
 }

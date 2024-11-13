@@ -4,19 +4,17 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "store")
+@Table(name = "stores")
 public class Store {
 	
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy="native")
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "store_generator")
     private int storeId;
 
     private String name;
