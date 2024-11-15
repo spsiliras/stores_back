@@ -1,6 +1,7 @@
 package com.backend.stores_back.controller;
 
 import com.backend.stores_back.exception.ResourceNotFoundException;
+import com.backend.stores_back.model.Employee;
 import com.backend.stores_back.model.Product;
 import com.backend.stores_back.model.Store;
 import com.backend.stores_back.repository.ProductRepository;
@@ -33,7 +34,7 @@ public class ProductController {
         Product product = storeRepository.findById(store_id).map(store -> {
             newProduct.setStore(store);
             return productRepository.save(newProduct);
-        }).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        }).orElseThrow(() -> new ResourceNotFoundException("Store with " + store_id + " not found"));
 
         return product;
     }
@@ -59,5 +60,10 @@ public class ProductController {
         store.get().getProducts().remove(product.get());
 
         productRepository.deleteById(product_id);
+    }
+
+    @GetMapping("/product/{product_id}")
+    public Product getProduct(@PathVariable int product_id){
+        return productRepository.findById(product_id).get();
     }
 }

@@ -33,7 +33,7 @@ public class EmployeeController {
         Employee employee = storeRepository.findById(store_id).map(store -> {
             newEmployee.setStore(store);
             return employeeRepository.save(newEmployee);
-        }).orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+        }).orElseThrow(() -> new ResourceNotFoundException("Store with " + store_id + " not found"));
 
         return employee;
     }
@@ -59,5 +59,10 @@ public class EmployeeController {
         store.get().getEmployees().remove(employee.get());
 
         employeeRepository.deleteById(employee_id);
+    }
+
+    @GetMapping("/employee/{employee_id}")
+    public Employee getEmployee(@PathVariable int employee_id){
+        return employeeRepository.findById(employee_id).get();
     }
 }

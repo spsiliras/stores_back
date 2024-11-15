@@ -2,13 +2,11 @@ package com.backend.stores_back.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name="product")
 public class Product {

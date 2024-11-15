@@ -27,7 +27,11 @@ public class StoreController {
 
     @DeleteMapping("/store/{id}")
     public String deleteStore(@PathVariable int id){
-        storeRepository.deleteById(id);
+        try {
+            storeRepository.deleteById(id);
+        } catch (Exception e) {
+            System.out.println("Store with id " + id + " not found");
+        }
 
         return "Store with id " + id + " deleted";
     }
