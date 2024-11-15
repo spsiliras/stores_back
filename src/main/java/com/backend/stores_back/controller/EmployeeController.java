@@ -5,6 +5,7 @@ import com.backend.stores_back.model.Employee;
 import com.backend.stores_back.model.Store;
 import com.backend.stores_back.repository.EmployeeRepository;
 import com.backend.stores_back.repository.StoreRepository;
+import com.backend.stores_back.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,53 +17,34 @@ import java.util.Optional;
 @RequestMapping("/employees")
 public class EmployeeController {
     @Autowired
-    private EmployeeRepository employeeRepository;
-
+    private EmployeeService employeeService;
     @Autowired
-    private StoreRepository storeRepository;
+    private EmployeeRepository employeeRepository;
 
     @GetMapping("/{store_id}")
     public List<Employee> getEmployees(@PathVariable int store_id) {
-        Optional<Store> store = storeRepository.findById(store_id);
 
-        return store.get().getEmployees();
+        return employeeService.getAllEmployees(store_id);
     }
 
     @PostMapping("/add/{store_id}")
     public Employee addEmployee(@RequestBody Employee newEmployee, @PathVariable int store_id) {
-        Employee employee = storeRepository.findById(store_id).map(store -> {
-            newEmployee.setStore(store);
-            return employeeRepository.save(newEmployee);
-        }).orElseThrow(() -> new ResourceNotFoundException("Store with " + store_id + " not found"));
 
-        return employee;
+        return employeeService.addEmployee(newEmployee, store_id);
     }
 
     @PostMapping("/edit/{employee_id}")
     public Employee editEmployee(@RequestBody Employee newEmployee, @PathVariable int employee_id) {
-        Employee employee = employeeRepository.findById(employee_id)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee with " + employee_id + " not found"));
-
-        employee.setName(newEmployee.getName());
-        employee.setAddress(newEmployee.getAddress());
-        employee.setSalary(newEmployee.getSalary());
-
-        return employeeRepository.save(employee);
+        return employeeService.updateEmployee(newEmployee, employee_id);
     }
 
     @DeleteMapping("/delete/{store_id}/{employee_id}")
     public void deleteEmployee(@PathVariable int employee_id, @PathVariable int store_id) {
-        Optional<Employee> employee = employeeRepository.findById(employee_id);
-
-        Optional<Store> store = storeRepository.findById(store_id);
-
-        store.get().getEmployees().remove(employee.get());
-
-        employeeRepository.deleteById(employee_id);
+        employeeService.deleteEmployee(employee_id, store_id);
     }
 
     @GetMapping("/employee/{employee_id}")
     public Employee getEmployee(@PathVariable int employee_id){
-        return employeeRepository.findById(employee_id).get();
+        return employeeService.getEmployeeById(employee_id);
     }
 }

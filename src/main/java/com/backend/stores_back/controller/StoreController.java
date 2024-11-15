@@ -1,9 +1,7 @@
 package com.backend.stores_back.controller;
 
-import com.backend.stores_back.model.Employee;
 import com.backend.stores_back.model.Store;
-import com.backend.stores_back.repository.EmployeeRepository;
-import com.backend.stores_back.repository.StoreRepository;
+import com.backend.stores_back.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,40 +10,41 @@ import java.util.List;
 @RestController
 @CrossOrigin("http://localhost:3000")
 public class StoreController {
+
     @Autowired
-    private StoreRepository storeRepository;
+    private StoreService storeService;
 
     @GetMapping("/stores")
     public List<Store> getAllStores(){
-        return storeRepository.findAll();
+        return storeService.getAllStores();
     }
 
     @PostMapping("/store")
     public Store addStore(@RequestBody Store newStore){
-        return storeRepository.save(newStore);
+        return storeService.addStore(newStore);
     }
 
     @DeleteMapping("/store/{id}")
     public String deleteStore(@PathVariable int id){
-            storeRepository.deleteById(id);
+            storeService.deleteStore(id);
 
         return "Store with id " + id + " deleted";
     }
 
     @PostMapping("/store/{id}")
     public Store updateStore(@PathVariable int id, @RequestBody Store newStore){
-        Store store = storeRepository.findById(id).get();
+        Store store = storeService.getStore(id).get();
 
         store.setName(newStore.getName());
         store.setOwner(newStore.getOwner());
         store.setLocation(newStore.getLocation());
 
-        return storeRepository.save(store);
+        return storeService.addStore(store);
     }
 
     @GetMapping("/store/{id}")
     public Store getStore(@PathVariable int id){
-        return storeRepository.findById(id).get();
+        return storeService.getStore(id).get();
     }
 
 
