@@ -2,6 +2,7 @@ package com.backend.stores_back.controller;
 
 import com.backend.stores_back.model.Store;
 import com.backend.stores_back.repository.StoreRepository;
+import com.backend.stores_back.service.StoreService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ class StoreControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
-    private StoreRepository storeRepository;
+    private StoreService storeService;
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -39,7 +40,7 @@ class StoreControllerTest {
         store.setOwner("test");
         store.setLocation("test");
 
-        given(storeRepository.findAll()).willReturn(List.of(store));
+        given(storeService.getAllStores()).willReturn(List.of(store));
             mockMvc.perform(get("/stores"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$[0].name").value(store.getName()));
@@ -54,7 +55,7 @@ class StoreControllerTest {
         store.setOwner("test");
         store.setLocation("test");
 
-        given(storeRepository.save(store)).willReturn(store);
+        given(storeService.addStore(store)).willReturn(store);
         mockMvc.perform(post("/store")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(store)))
@@ -69,7 +70,7 @@ class StoreControllerTest {
         store.setOwner("test");
         store.setLocation("test");
 
-        given(storeRepository.findById(1)).willReturn(Optional.of(store));
+        given(storeService.getStore(1)).willReturn(Optional.of(store));
         mockMvc.perform(get("/store/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(store.getName()));
@@ -88,8 +89,8 @@ class StoreControllerTest {
         updatedStore.setOwner("updated");
         updatedStore.setLocation("updated");
 
-        given(storeRepository.findById(store.getStoreId())).willReturn(Optional.of(store));
-        given(storeRepository.save(store)).willReturn(updatedStore);
+        given(storeService.getStore(store.getStoreId())).willReturn(Optional.of(store));
+        given(storeService.addStore(store)).willReturn(updatedStore);
 
         mockMvc.perform(post("/store/1")
                 .contentType(MediaType.APPLICATION_JSON)
